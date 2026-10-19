@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>شاشة البورصة المصرية</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3efe6;--card:#fffdf8;--ink:#14281f;--mut:#6b7a70;--line:#d9d2c0;--up:#0b7a43;--dn:#b3261e;--gold:#a8741a}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1a15;--card:#16251d;--ink:#eee9da;--mut:#98a89d;--line:#2a3d33;--up:#3ecf84;--dn:#ff7b72;--gold:#e0b050}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;line-height:1.7}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+h1{margin:0;font-size:1.25rem}
+nav{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem}
+nav a{color:var(--mut);text-decoration:none}nav a:hover{color:var(--gold)}
+.badge{padding:3px 10px;border-radius:99px;font-size:.8rem;font-weight:600;border:1px solid currentColor}
+.open{color:var(--up)}.closed{color:var(--dn)}
+main{max-width:1280px;margin:auto;padding:14px 16px 40px;display:grid;gap:16px}
+.cols{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:960px){.cols{grid-template-columns:1fr 1fr}}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+h2{margin:0 0 10px;font-size:1.05rem}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--gold);background:transparent;color:var(--gold);border-radius:8px;padding:6px 12px;font-weight:600}
+button:hover,button:focus-visible,button.on{background:var(--gold);color:var(--card);outline:none}
+select,input,textarea{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;max-width:100%}
+textarea{width:100%;min-height:60px;margin-top:8px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.ai{white-space:pre-wrap;margin-top:10px;padding:12px;border-inline-start:3px solid var(--gold);background:var(--bg);border-radius:6px;min-height:48px}
+.note{color:var(--mut);font-size:.8rem}
+#news{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));max-height:640px;overflow:auto}
+.n{border:1px solid var(--line);border-radius:8px;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column}
+.n:hover{border-color:var(--gold)}
+.n img{width:100%;height:130px;object-fit:cover;background:var(--line)}
+.n div{padding:8px 10px}.n b{display:block;font-size:.92rem;line-height:1.5}.n small{color:var(--mut)}
+iframe{width:100%;border:0;display:block}
+.tvc{min-height:60px}
+</style>
+</head>
+<body>
+<header>
+  <h1>شاشة البورصة المصرية</h1>
+  <nav><a href="#live">الشاشة</a><a href="#chart">الرسم والفني</a><a href="#ai">الذكاء الاصطناعي</a><a href="#newsbox">الأخبار</a><a href="#eco">التقويم الاقتصادي</a></nav>
+  <span class="badge" id="status">…</span>
+</header>
+<div id="ticker" class="tvc"></div>
+
+<main>
+  <section id="live">
+    <h2>الشاشة اللحظية</h2>
+    <div class="cols">
+      <div id="quotes" class="tvc"></div>
+      <div id="screener" class="tvc"></div>
+    </div>
+  </section>
+
+  <section id="chart">
+    <div class="row"><h2 style="margin:0">الرسم البياني والتحليل الفني</h2>
+      <select id="sym" aria-label="اختر السهم"></select></div>
+    <div class="cols">
+      <div id="adv" class="tvc" style="height:480px"></div>
+      <div id="ta" class="tvc"></div>
+    </div>
+  </section>
+
+  <section id="ai">
+    <h2>أدوات التحليل بالذكاء الاصطناعي</h2>
+    <div class="row">
+      <input id="key" type="password" placeholder="مفتاح Anthropic API (يُحفظ في متصفحك فقط)" size="34" autocomplete="off">
+      <button id="saveKey">حفظ المفتاح</button>
+    </div>
+    <div class="row" id="tools">
+      <button data-t="tech">تحليل فني</button>
+      <button data-t="fund">تحليل أساسي</button>
+      <button data-t="scen">سيناريوهات ومخاطر</button>
+      <button data-t="news">أثر الأخبار على السهم</button>
+      <button data-t="mkt">ملخص السوق اليوم</button>
+      <button data-t="eco">أثر الأخبار الاقتصادية</button>
+    </div>
+    <textarea id="ask" placeholder="أو اكتب سؤالك عن السهم المختار ثم اضغط «اسأل»"></textarea>
+    <div class="row" style="margin-top:8px"><button id="askBtn">اسأل</button>
+      <span class="note">التحليل يستخدم البحث في الويب للحصول على بيانات حديثة، وهو ليس نصيحة استثمارية.</span></div>
+    <div class="ai" id="out">اختر سهماً ثم أداة تحليل.</div>
+  </section>
+
+  <section id="newsbox">
+    <h2>الأخبار</h2>
+    <div class="tabs"><button class="on" data-k="market">أخبار البورصة</button><button data-k="eco">أخبار اقتصادية مصرية</button><button data-k="tv">TradingView</button></div>
+    <div id="news">جارٍ التحميل…</div>
+    <div id="tvnews" class="tvc" hidden></div>
+    <p class="note" id="newsStamp"></p>
+  </section>
+
+  <section id="eco">
+    <h2>التقويم الاقتصادي لمصر (Investing.com)</h2>
+    <iframe height="520" src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=59&calType=week&timeZone=7&lang=14" title="التقويم الاقتصادي"></iframe>
+    <p class="note">بيانات التقويم من <a href="https://sa.investing.com" target="_blank" rel="noopener" style="color:var(--gold)">Investing.com</a></p>
+  </section>
+</main>
+
+<script>
+/* ===== الإعدادات ===== */
+const AI_MODEL='claude-sonnet-4-6';
+const PROXY_URL=''; // اختياري: رابط خادمك الوسيط لإخفاء المفتاح (يستقبل نفس جسم الطلب)
+const STOCKS={COMI:'البنك التجاري الدولي',TMGH:'طلعت مصطفى',EAST:'الشرقية للدخان',FWRY:'فوري',SWDY:'السويدي إليكتريك',ABUK:'أبوقير للأسمدة',ORAS:'أوراسكوم للإنشاء',HRHO:'القلعة/هيرميس',EFIH:'إي فاينانس',ETEL:'المصرية للاتصالات',ESRS:'حديد عز',PHDC:'بالم هيلز',MFPC:'موبكو',SKPC:'سيدي كرير',ORWE:'النساجون الشرقيون',JUFO:'جهينة',CLHO:'كليوباترا',EKHO:'القابضة المصرية الكويتية',AMOC:'أموك',CCAP:'القلعة'};
+const FEEDS=[
+ {k:'market',url:'https://www.alborsaanews.com/feed'},
+ {k:'market',url:'https://sa.investing.com/rss/news_25.rss'},
+ {k:'market',url:'https://almalnews.com/feed'},
+ {k:'eco',url:'https://amwalalghad.com/feed'},
+ {k:'eco',url:'https://www.youm7.com/rss/SectionRss?SectionID=297'},
+ {k:'eco',url:'https://sa.investing.com/rss/news_14.rss'}
+];
+
+const $=id=>document.getElementById(id);
+const dark=matchMedia('(prefers-color-scheme:dark)').matches, theme=dark?'dark':'light';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ===== ودجتات TradingView (تتحدث لحظياً من المصدر) ===== */
+function tv(id,name,cfg){
+  const host=$(id);host.innerHTML='';
+  const w=document.createElement('div');w.className='tradingview-widget-container';
+  w.innerHTML='<div class="tradingview-widget-container__widget"></div>';
+  const s=document.createElement('script');
+  s.src='https://s3.tradingview.com/external-embedding/embed-widget-'+name+'.js';s.async=true;
+  s.text=JSON.stringify(Object.assign({locale:'ar_AE',isTransparent:true},cfg));
+  w.appendChild(s);host.appendChild(w);
+}
+const sel=$('sym');
+sel.innerHTML=Object.entries(STOCKS).map(([k,v])=>`<option value="${k}">${k} — ${v}</option>`).join('');
+function drawSymbol(){
+  const symbol='EGX:'+sel.value;
+  tv('adv','advanced-chart',{autosize:true,symbol,interval:'D',timezone:'Africa/Cairo',theme,style:'1',allow_symbol_change:true,isTransparent:false});
+  tv('ta','technical-analysis',{interval:'1D',width:'100%',height:480,symbol,showIntervalTabs:true,colorTheme:theme});
+}
+sel.onchange=drawSymbol;
+
+tv('ticker','ticker-tape',{colorTheme:theme,displayMode:'adaptive',symbols:
+  [{proName:'EGX:EGX30',title:'EGX30'},{proName:'EGX:EGX70EWI',title:'EGX70'},...['COMI','TMGH','EAST','FWRY','SWDY','ABUK','ETEL','HRHO'].map(s=>({proName:'EGX:'+s,title:s}))]});
+tv('quotes','market-quotes',{width:'100%',height:560,colorTheme:theme,symbolsGroups:[
+  {name:'المؤشرات',symbols:[{name:'EGX:EGX30',displayName:'EGX30'},{name:'EGX:EGX70EWI',displayName:'EGX70'},{name:'EGX:EGX100EWI',displayName:'EGX100'}]},
+  {name:'الأسهم القيادية',symbols:Object.entries(STOCKS).map(([k,v])=>({name:'EGX:'+k,displayName:v}))}]});
+tv('screener','screener',{width:'100%',height:560,defaultColumn:'overview',defaultScreen:'most_capitalized',market:'egypt',showToolbar:true,colorTheme:theme});
+tv('tvnews','timeline',{feedMode:'symbol',symbol:'EGX:EGX30',colorTheme:theme,displayMode:'regular',width:'100%',height:560});
+drawSymbol();
+
+/* ===== حالة السوق (الأحد–الخميس 10:00–14:30 القاهرة) ===== */
+function cairo(){
+  const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Africa/Cairo',weekday:'short',hour:'numeric',minute:'numeric',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+  return {d:p.weekday,m:(+p.hour)*60+(+p.minute),day:new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Cairo'})};
+}
+let today=cairo().day;
+function status(){
+  const c=cairo(),open=!['Fri','Sat'].includes(c.d)&&c.m>=600&&c.m<=870;
+  const b=$('status');b.textContent=open?'السوق مفتوح':'السوق مغلق';b.className='badge '+(open?'open':'closed');
+  if(c.day!==today)location.reload(); // تحديث يومي كامل عند تغير اليوم
+}
+status();setInterval(status,60000);
+
+/* ===== الأخبار بالصور (RSS عبر rss2json) ===== */
+let NEWS={market:[],eco:[]},tab='market';
+function img(it){
+  if(it.thumbnail)return it.thumbnail;
+  if(it.enclosure&&it.enclosure.link&&/image|jpg|jpeg|png|webp/i.test((it.enclosure.type||'')+it.enclosure.link))return it.enclosure.link;
+  const m=((it.content||'')+(it.description||'')).match(/<img[^>]+src=["']([^"']+)/i);return m?m[1]:'';
+}
+async function loadNews(){
+  const out={market:[],eco:[]};
+  await Promise.all(FEEDS.map(async f=>{
+    try{
+      const j=await (await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f.url))).json();
+      (j.items||[]).forEach(it=>out[f.k].push({t:it.title,l:it.link,i:img(it),d:new Date((it.pubDate||'').replace(' ','T')+'Z'),s:(j.feed&&j.feed.title)||''}));
+    }catch(e){}
+  }));
+  for(const k in out){
+    const seen=new Set();
+    out[k]=out[k].filter(x=>x.t&&!seen.has(x.t)&&seen.add(x.t)).sort((a,b)=>b.d-a.d).slice(0,30);
+  }
+  if(out.market.length||out.eco.length){NEWS=out;$('newsStamp').textContent='آخر تحديث للأخبار: '+new Date().toLocaleTimeString('ar-EG');}
+  drawNews();
+}
+function drawNews(){
+  const box=$('news'),tvb=$('tvnews');
+  box.hidden=tab==='tv';tvb.hidden=tab!=='tv';
+  if(tab==='tv')return;
+  const list=NEWS[tab];
+  box.innerHTML=list.length?list.map(n=>`<a class="n" href="${esc(n.l)}" target="_blank" rel="noopener">
+    ${n.i?`<img src="${esc(n.i)}" loading="lazy" alt="" onerror="this.remove()">`:''}
+    <div><b>${esc(n.t)}</b><small>${esc(n.s)} · ${isNaN(n.d)?'':n.d.toLocaleString('ar-EG')}</small></div></a>`).join(''):'لا توجد أخبار حالياً. قد يكون الحد المجاني لخدمة RSS قد استُنفد، أو أن أحد الروابط في FEEDS تغيّر.';
+}
+document.querySelector('.tabs').onclick=e=>{
+  if(!e.target.dataset.k)return;tab=e.target.dataset.k;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b===e.target));drawNews();
+};
+loadNews();setInterval(loadNews,10*60*1000);
+
+/* ===== الذكاء الاصطناعي ===== */
+$('key').value=localStorage.getItem('akey')||'';
+$('saveKey').onclick=()=>{localStorage.setItem('akey',$('key').value.trim());$('out').textContent='تم حفظ المفتاح في هذا المتصفح.'};
+const SYS='أنت محلل أسواق مالية متخصص في البورصة المصرية (EGX). اكتب بالعربية، بإيجاز وبعناوين قصيرة، واعتمد على البيانات الحديثة التي تجدها عبر البحث واذكر التاريخ والمصدر عند ذكر أرقام. لا تخترع أرقاماً؛ إن لم تجد بيانات فقل ذلك. أنهِ بتنبيه أن هذا ليس نصيحة استثمارية.';
+const heads=k=>NEWS[k].slice(0,12).map(n=>'- '+n.t).join('\n');
+function prompt(t){
+  const s=sel.value,name=STOCKS[s],d=new Date().toLocaleDateString('ar-EG'),me=`سهم ${name} (EGX:${s})`;
+  return {
+    tech:`اليوم ${d}. حلل ${me} فنياً: الاتجاه العام، مستويات الدعم والمقاومة، المتوسطات المتحركة، RSI وMACD، أحجام التداول، ثم خلاصة قصيرة.`,
+    fund:`اليوم ${d}. حلل ${me} أساسياً: آخر النتائج المالية، مكرر الربحية، القيمة الدفترية، توزيعات الأرباح، الديون، وضعه في قطاعه، ونقاط القوة والضعف.`,
+    scen:`اليوم ${d}. ضع للسهم ${me} ثلاثة سيناريوهات (صاعد/محايد/هابط) بمحفزات كل سيناريو وأهم المخاطر (سعر الصرف، الفائدة، السيولة، التنظيم).`,
+    news:`اليوم ${d}. هذه عناوين أخبار البورصة المصرية:\n${heads('market')}\nحدد ما يؤثر منها على ${me} أو قطاعه، وقيّم الأثر (إيجابي/سلبي/محايد) مع السبب.`,
+    mkt:`اليوم ${d}. لخص حالة البورصة المصرية اليوم: أداء EGX30، المزاج العام، القطاعات الأبرز، السيولة. وهذه عناوين الأخبار:\n${heads('market')}`,
+    eco:`اليوم ${d}. هذه عناوين الأخبار الاقتصادية المصرية:\n${heads('eco')}\nلخص أهم ما فيها وأثره المتوقع على البورصة وسعر الصرف والقطاعات.`
+  }[t];
+}
+async function runAI(text){
+  const key=$('key').value.trim(),o=$('out');
+  if(!PROXY_URL&&!key){o.textContent='أدخل مفتاح Anthropic API أولاً.';return}
+  o.textContent='جارٍ التحليل… (قد يستغرق دقيقة)';
+  const body={model:AI_MODEL,max_tokens:1800,system:SYS,tools:[{type:'web_search_20250305',name:'web_search',max_uses:4}],messages:[{role:'user',content:text}]};
+  try{
+    const r=await fetch(PROXY_URL||'https://api.anthropic.com/v1/messages',{method:'POST',headers:Object.assign({'content-type':'application/json'},PROXY_URL?{}:{'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}),body:JSON.stringify(body)});
+    const j=await r.json();
+    if(!r.ok)throw new Error((j.error&&j.error.message)||r.status);
+    o.innerHTML=esc(j.content.filter(b=>b.type==='text').map(b=>b.text).join('')).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^#+\s*(.+)$/gm,'<b>$1</b>');
+  }catch(e){o.textContent='تعذر التحليل: '+e.message}
+}
+$('tools').onclick=e=>{if(e.target.dataset.t)runAI(prompt(e.target.dataset.t))};
+$('askBtn').onclick=()=>{const q=$('ask').value.trim();if(q)runAI(`سؤال عن سهم ${STOCKS[sel.value]} (EGX:${sel.value}) بتاريخ ${new Date().toLocaleDateString('ar-EG')}: ${q}`)};
+</script>
+</body>
+  </html>
