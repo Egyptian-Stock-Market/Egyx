@@ -1,231 +1,240 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>شاشة البورصة المصرية</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>البورصة المصرية – لوحة التداول</title>
 <style>
-:root{--bg:#f3efe6;--card:#fffdf8;--ink:#14281f;--mut:#6b7a70;--line:#d9d2c0;--up:#0b7a43;--dn:#b3261e;--gold:#a8741a}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1a15;--card:#16251d;--ink:#eee9da;--mut:#98a89d;--line:#2a3d33;--up:#3ecf84;--dn:#ff7b72;--gold:#e0b050}}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f6f8;--card:#fff;--tx:#14202b;--mu:#64727f;--bd:#dde3e8;--up:#0a8f4e;--dn:#d02b3a;--ac:#1d5fd1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1419;--card:#17202a;--tx:#e8eef3;--mu:#8fa0ae;--bd:#263340;--up:#2ecc7f;--dn:#ff5b6b;--ac:#5a9bff}}
+:root[data-theme="dark"]{--bg:#0e1419;--card:#17202a;--tx:#e8eef3;--mu:#8fa0ae;--bd:#263340;--up:#2ecc7f;--dn:#ff5b6b;--ac:#5a9bff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;line-height:1.7}
-header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
-h1{margin:0;font-size:1.25rem}
-nav{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem}
-nav a{color:var(--mut);text-decoration:none}nav a:hover{color:var(--gold)}
-.badge{padding:3px 10px;border-radius:99px;font-size:.8rem;font-weight:600;border:1px solid currentColor}
-.open{color:var(--up)}.closed{color:var(--dn)}
-main{max-width:1280px;margin:auto;padding:14px 16px 40px;display:grid;gap:16px}
-.cols{display:grid;gap:16px;grid-template-columns:1fr}
-@media(min-width:960px){.cols{grid-template-columns:1fr 1fr}}
-section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
-h2{margin:0 0 10px;font-size:1.05rem}
-button,select,input,textarea{font:inherit;color:inherit}
-button{cursor:pointer;border:1px solid var(--gold);background:transparent;color:var(--gold);border-radius:8px;padding:6px 12px;font-weight:600}
-button:hover,button:focus-visible,button.on{background:var(--gold);color:var(--card);outline:none}
-select,input,textarea{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;max-width:100%}
-textarea{width:100%;min-height:60px;margin-top:8px}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
-.tabs{display:flex;gap:6px;margin-bottom:10px}
-.ai{white-space:pre-wrap;margin-top:10px;padding:12px;border-inline-start:3px solid var(--gold);background:var(--bg);border-radius:6px;min-height:48px}
-.note{color:var(--mut);font-size:.8rem}
-#news{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));max-height:640px;overflow:auto}
-.n{border:1px solid var(--line);border-radius:8px;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column}
-.n:hover{border-color:var(--gold)}
-.n img{width:100%;height:130px;object-fit:cover;background:var(--line)}
-.n div{padding:8px 10px}.n b{display:block;font-size:.92rem;line-height:1.5}.n small{color:var(--mut)}
-iframe{width:100%;border:0;display:block}
-.tvc{min-height:60px}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",Arial,sans-serif;font-size:15px}
+header{padding:12px 14px 0;display:flex;justify-content:space-between;align-items:center}
+h1{font-size:18px;margin:0}
+.live{font-size:12px;color:var(--mu)}.live i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--up);margin-left:5px;animation:p 1.4s infinite}
+@keyframes p{50%{opacity:.25}}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 14px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
+nav button{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:8px 14px;border-radius:20px;font:inherit;cursor:pointer}
+nav button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+main{padding:0 14px 30px;max-width:1000px;margin:auto}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ix{cursor:pointer;text-align:center}.ix b{display:block;font-size:12px;color:var(--mu)}.ix span{font-size:18px;font-weight:700;display:block;margin:2px 0}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:480px}
+th,td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mu);font-weight:600;font-size:12px}
+td.n{font-variant-numeric:tabular-nums}
+.sec{font-weight:700;padding:10px 0 4px;color:var(--ac)}
+.tabs2{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tabs2 button,.btn{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 12px;border-radius:8px;font:inherit;cursor:pointer}
+.tabs2 button.on,.btn.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+svg.ch{width:100%;height:220px;display:block}
+select,input{font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);max-width:100%}
+#log{height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.m{padding:9px 12px;border-radius:12px;max-width:90%;white-space:pre-wrap;line-height:1.7}
+.m.u{background:var(--ac);color:#fff;align-self:flex-start}.m.a{background:var(--bg);border:1px solid var(--bd);align-self:flex-end}
+.row{display:flex;gap:6px}.row input{flex:1}
+.note{font-size:12px;color:var(--mu);line-height:1.7}
+.news a{color:var(--tx);text-decoration:none;display:block;padding:9px 0;border-bottom:1px solid var(--bd)}.news small{color:var(--mu);display:block}
+.src a{color:var(--ac);margin-left:12px}
 </style>
 </head>
 <body>
-<header>
-  <h1>شاشة البورصة المصرية</h1>
-  <nav><a href="#live">الشاشة</a><a href="#chart">الرسم والفني</a><a href="#ai">الذكاء الاصطناعي</a><a href="#newsbox">الأخبار</a><a href="#eco">التقويم الاقتصادي</a></nav>
-  <span class="badge" id="status">…</span>
-</header>
-<div id="ticker" class="tvc"></div>
-
+<header><h1>📈 البورصة المصرية</h1><div class="live"><i></i><span id="clock">—</span></div></header>
+<nav id="nav">
+<button data-t="live" class="on">لحظي</button><button data-t="prices">الأسعار</button><button data-t="idx">المؤشرات</button><button data-t="fx">عملات وذهب</button><button data-t="eco">الاقتصاد</button><button data-t="ai">الذكاء الاصطناعي</button><button data-t="news">الأخبار</button>
+</nav>
 <main>
-  <section id="live">
-    <h2>الشاشة اللحظية</h2>
-    <div class="cols">
-      <div id="quotes" class="tvc"></div>
-      <div id="screener" class="tvc"></div>
-    </div>
-  </section>
 
-  <section id="chart">
-    <div class="row"><h2 style="margin:0">الرسم البياني والتحليل الفني</h2>
-      <select id="sym" aria-label="اختر السهم"></select></div>
-    <div class="cols">
-      <div id="adv" class="tvc" style="height:480px"></div>
-      <div id="ta" class="tvc"></div>
-    </div>
-  </section>
+<section id="live" class="on">
+<div class="grid" id="ixCards"></div>
+<div class="card" style="margin-top:12px"><div id="chTitle" style="font-weight:700;margin-bottom:6px"></div><svg class="ch" id="chart" viewBox="0 0 600 220" preserveAspectRatio="none"></svg></div>
+<div class="card"><b>الأكثر ارتفاعاً وانخفاضاً</b><div class="tw"><table id="movers"></table></div></div>
+</section>
 
-  <section id="ai">
-    <h2>أدوات التحليل بالذكاء الاصطناعي</h2>
-    <div class="row">
-      <input id="key" type="password" placeholder="مفتاح Anthropic API (يُحفظ في متصفحك فقط)" size="34" autocomplete="off">
-      <button id="saveKey">حفظ المفتاح</button>
-    </div>
-    <div class="row" id="tools">
-      <button data-t="tech">تحليل فني</button>
-      <button data-t="fund">تحليل أساسي</button>
-      <button data-t="scen">سيناريوهات ومخاطر</button>
-      <button data-t="news">أثر الأخبار على السهم</button>
-      <button data-t="mkt">ملخص السوق اليوم</button>
-      <button data-t="eco">أثر الأخبار الاقتصادية</button>
-    </div>
-    <textarea id="ask" placeholder="أو اكتب سؤالك عن السهم المختار ثم اضغط «اسأل»"></textarea>
-    <div class="row" style="margin-top:8px"><button id="askBtn">اسأل</button>
-      <span class="note">التحليل يستخدم البحث في الويب للحصول على بيانات حديثة، وهو ليس نصيحة استثمارية.</span></div>
-    <div class="ai" id="out">اختر سهماً ثم أداة تحليل.</div>
-  </section>
+<section id="prices">
+<div class="tabs2" id="secTabs"></div>
+<div class="card tw"><table id="ptable"></table></div>
+</section>
 
-  <section id="newsbox">
-    <h2>الأخبار</h2>
-    <div class="tabs"><button class="on" data-k="market">أخبار البورصة</button><button data-k="eco">أخبار اقتصادية مصرية</button><button data-k="tv">TradingView</button></div>
-    <div id="news">جارٍ التحميل…</div>
-    <div id="tvnews" class="tvc" hidden></div>
-    <p class="note" id="newsStamp"></p>
-  </section>
+<section id="idx">
+<div class="tabs2" id="idxTabs"></div>
+<div class="card"><div id="idxHead" style="font-weight:700;margin-bottom:6px"></div><div class="tw"><table id="itable"></table></div></div>
+</section>
 
-  <section id="eco">
-    <h2>التقويم الاقتصادي لمصر (Investing.com)</h2>
-    <iframe height="520" src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=59&calType=week&timeZone=7&lang=14" title="التقويم الاقتصادي"></iframe>
-    <p class="note">بيانات التقويم من <a href="https://sa.investing.com" target="_blank" rel="noopener" style="color:var(--gold)">Investing.com</a></p>
-  </section>
+<section id="fx">
+<div class="grid" id="goldCards"></div>
+<div class="card tw" style="margin-top:12px"><b>العملات مقابل الجنيه المصري</b><table id="fxTable"></table></div>
+<div class="card tw"><b>أزواج عالمية</b><table id="crossTable"></table></div>
+<p class="note" id="fxNote"></p>
+</section>
+
+<section id="eco">
+<div class="grid" id="ecoCards"></div>
+<div class="card" style="margin-top:12px"><button class="btn p" onclick="ecoBrief()">🤖 ملخص اقتصادي بالذكاء الاصطناعي</button><div id="ecoAI" class="m a" style="margin-top:8px;max-width:100%;display:none"></div></div>
+<div class="card news" id="ecoNews"></div>
+</section>
+
+<section id="ai">
+<div class="card">
+<b>🤖 توقعات سريعة</b>
+<div class="tabs2" style="margin-top:8px">
+<button onclick="askAll()">توقع كل الأسهم</button><button onclick="askIdx()">توقع المؤشرات</button>
+</div>
+<b>⚖️ مقارنة سهمين</b>
+<div class="row" style="margin:8px 0;flex-wrap:wrap"><select id="c1"></select><select id="c2"></select><button class="btn p" onclick="cmp()">قارن</button></div>
+</div>
+<div class="card"><div id="log"></div>
+<div class="row"><input id="q" placeholder="اسأل عن سهم أو قطاع… مثال: توقع COMI"><button class="btn p" onclick="send()">إرسال</button></div>
+<p class="note">تحليلات إرشادية فقط ولا تُعد نصيحة استثمارية. الأرقام في هذه النسخة تجريبية.</p></div>
+</section>
+
+<section id="news">
+<div class="tabs2" id="newsTabs"></div><div class="card news" id="newsBox"></div>
+<div class="card src"><b>مصادر البيانات الاحترافية</b><p class="note">لسحب بيانات حقيقية لحظية اربط الصفحة بخادمك (Backend) الذي يجلب من المصادر التالية بترخيصها، ثم عدّل دالة <code>fetchQuotes()</code> في الكود:</p>
+<a href="https://www.egx.com.eg" target="_blank" rel="noopener">البورصة المصرية</a><a href="https://www.tradingview.com/markets/stocks-egypt/" target="_blank" rel="noopener">TradingView</a><a href="https://www.investing.com/equities/egypt" target="_blank" rel="noopener">Investing.com</a></div>
+</section>
 </main>
 
 <script>
-/* ===== الإعدادات ===== */
-const AI_MODEL='claude-sonnet-4-6';
-const PROXY_URL=''; // اختياري: رابط خادمك الوسيط لإخفاء المفتاح (يستقبل نفس جسم الطلب)
-const STOCKS={COMI:'البنك التجاري الدولي',TMGH:'طلعت مصطفى',EAST:'الشرقية للدخان',FWRY:'فوري',SWDY:'السويدي إليكتريك',ABUK:'أبوقير للأسمدة',ORAS:'أوراسكوم للإنشاء',HRHO:'القلعة/هيرميس',EFIH:'إي فاينانس',ETEL:'المصرية للاتصالات',ESRS:'حديد عز',PHDC:'بالم هيلز',MFPC:'موبكو',SKPC:'سيدي كرير',ORWE:'النساجون الشرقيون',JUFO:'جهينة',CLHO:'كليوباترا',EKHO:'القابضة المصرية الكويتية',AMOC:'أموك',CCAP:'القلعة'};
-const FEEDS=[
- {k:'market',url:'https://www.alborsaanews.com/feed'},
- {k:'market',url:'https://sa.investing.com/rss/news_25.rss'},
- {k:'market',url:'https://almalnews.com/feed'},
- {k:'eco',url:'https://amwalalghad.com/feed'},
- {k:'eco',url:'https://www.youm7.com/rss/SectionRss?SectionID=297'},
- {k:'eco',url:'https://sa.investing.com/rss/news_14.rss'}
-];
+/* ===== البيانات التجريبية: [الرمز, الاسم, القطاع, السعر, المؤشر(30/70)] ===== */
+const S=[
+["COMI","البنك التجاري الدولي","بنوك",95,30],["ADIB","مصرف أبوظبي الإسلامي","بنوك",30,30],["CIEB","كريدي أجريكول","بنوك",25,30],
+["TMGH","طلعت مصطفى","عقارات",70,30],["PHDC","بالم هيلز","عقارات",7,30],["EMFD","إعمار مصر","عقارات",10,30],
+["HRHO","إي إف جي القابضة","خدمات مالية",22,30],["BTFH","بلتون المالية","خدمات مالية",4,30],["EKHO","المصرية الكويتية","خدمات مالية",1.5,30],
+["ABUK","أبوقير للأسمدة","كيماويات",45,30],["MFPC","مصر لإنتاج الأسمدة","كيماويات",40,30],["SKPC","سيدي كرير","كيماويات",25,30],["AMOC","أموك","كيماويات",8,30],
+["SWDY","السويدي إليكتريك","صناعة",60,30],["ESRS","حديد عز","صناعة",70,30],["ORWE","النساجون الشرقيون","صناعة",28,30],
+["EAST","الشرقية للدخان","سلع",28,30],["JUFO","جهينة","سلع",18,30],
+["ETEL","المصرية للاتصالات","اتصالات وتكنولوجيا",75,30],["FWRY","فوري","اتصالات وتكنولوجيا",17,30],["EFIH","إي فاينانس","اتصالات وتكنولوجيا",20,30],
+["ORAS","أوراسكوم للإنشاءات","إنشاءات",400,30],["CLHO","كليوباترا","رعاية صحية",8,30],
+["OCDI","سوديك","عقارات",24,70],["MNHD","مدينة نصر للإسكان","عقارات",6,70],["ISPH","ابن سينا فارما","رعاية صحية",5,70],
+["DSCW","دايس","صناعة",4,70],["RAYA","راية القابضة","اتصالات وتكنولوجيا",3,70],["CCAP","القلعة","خدمات مالية",3,70],["GBCO","جي بي أوتو","سلع",16,70]
+].map(a=>({s:a[0],n:a[1],sec:a[2],p:a[3],o:a[3],ix:a[4],v:0,h:a[3],l:a[3]}));
+const IX={EGX30:S.filter(x=>x.ix==30),EGX70:S.filter(x=>x.ix==70),EGX100:S};
+const base={EGX30:30000,EGX70:9000,EGX100:12000};
+const hist={},ixv={},ixo={};
+const $=id=>document.getElementById(id),f=(x,d=2)=>Number(x).toLocaleString("ar-EG",{minimumFractionDigits:d,maximumFractionDigits:d});
+const pc=x=>(x.p/x.o-1)*100,cls=v=>v>=0?"up":"dn",sg=v=>(v>=0?"+":"")+f(v)+"%";
 
-const $=id=>document.getElementById(id);
-const dark=matchMedia('(prefers-color-scheme:dark)').matches, theme=dark?'dark':'light';
-const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* ===== طبقة جلب البيانات: استبدلها بنداء لخادمك للحصول على أسعار حقيقية ===== */
+const API_URL=location.protocol==="file:"?"http://localhost:3000":location.origin; // عنوان الخادم
+const api=async p=>{const r=await fetch(API_URL+p);if(!r.ok)throw new Error(r.status);return r.json()};
+let real={},liveOn=false;
+async function fetchQuotes(){
+  try{const r=await api("/api/quotes");
+    if(!r.stocks.length)throw 0;
+    if(!liveOn){liveOn=true;for(const k in hist)hist[k]=[]}
+    r.stocks.forEach(q=>{const x=S.find(y=>y.s==q.s);if(x){x.p=q.p;x.o=q.o??x.o;x.h=q.h??x.h;x.l=q.l??x.l;x.v=q.v??x.v}});
+    real=r.indices||{};return;
+  }catch(e){}
+  S.forEach(x=>{const d=(Math.random()-.485)*.004;x.p=Math.max(.1,+(x.p*(1+d)).toFixed(x.p<10?3:2));x.h=Math.max(x.h,x.p);x.l=Math.min(x.l,x.p);x.v+=Math.round(Math.random()*40000)});
+}
+function calcIdx(){for(const k in IX){if(real[k]&&real[k].p){ixv[k]=real[k].p;ixo[k]=real[k].o||real[k].p;continue}const w=IX[k];ixv[k]=base[k]*(w.reduce((a,x)=>a+x.p/x.o,0)/w.length);}}
+Object.keys(IX).forEach(k=>{hist[k]=[];ixo[k]=base[k]});
+calcIdx();
+for(let i=0;i<40;i++){S.forEach(x=>x.p*=1+(Math.random()-.485)*.003);calcIdx();for(const k in IX)hist[k].push(ixv[k]);}
+S.forEach(x=>{x.o=x.p;x.h=x.l=x.p});
 
-/* ===== ودجتات TradingView (تتحدث لحظياً من المصدر) ===== */
-function tv(id,name,cfg){
-  const host=$(id);host.innerHTML='';
-  const w=document.createElement('div');w.className='tradingview-widget-container';
-  w.innerHTML='<div class="tradingview-widget-container__widget"></div>';
-  const s=document.createElement('script');
-  s.src='https://s3.tradingview.com/external-embedding/embed-widget-'+name+'.js';s.async=true;
-  s.text=JSON.stringify(Object.assign({locale:'ar_AE',isTransparent:true},cfg));
-  w.appendChild(s);host.appendChild(w);
-}
-const sel=$('sym');
-sel.innerHTML=Object.entries(STOCKS).map(([k,v])=>`<option value="${k}">${k} — ${v}</option>`).join('');
-function drawSymbol(){
-  const symbol='EGX:'+sel.value;
-  tv('adv','advanced-chart',{autosize:true,symbol,interval:'D',timezone:'Africa/Cairo',theme,style:'1',allow_symbol_change:true,isTransparent:false});
-  tv('ta','technical-analysis',{interval:'1D',width:'100%',height:480,symbol,showIntervalTabs:true,colorTheme:theme});
-}
-sel.onchange=drawSymbol;
+let cur="EGX30",secF="الكل",idxF="EGX30";
+function rowP(x){const c=pc(x);return `<tr><td><b>${x.s}</b></td><td>${x.n}</td><td class="n">${f(x.p)}</td><td class="n ${cls(c)}">${sg(c)}</td><td class="n">${f(x.h)}</td><td class="n">${f(x.l)}</td><td class="n">${f(x.v/1000,0)}K</td></tr>`}
+const head="<tr><th>الرمز</th><th>الشركة</th><th>السعر</th><th>التغير</th><th>الأعلى</th><th>الأدنى</th><th>الحجم</th></tr>";
 
-tv('ticker','ticker-tape',{colorTheme:theme,displayMode:'adaptive',symbols:
-  [{proName:'EGX:EGX30',title:'EGX30'},{proName:'EGX:EGX70EWI',title:'EGX70'},...['COMI','TMGH','EAST','FWRY','SWDY','ABUK','ETEL','HRHO'].map(s=>({proName:'EGX:'+s,title:s}))]});
-tv('quotes','market-quotes',{width:'100%',height:560,colorTheme:theme,symbolsGroups:[
-  {name:'المؤشرات',symbols:[{name:'EGX:EGX30',displayName:'EGX30'},{name:'EGX:EGX70EWI',displayName:'EGX70'},{name:'EGX:EGX100EWI',displayName:'EGX100'}]},
-  {name:'الأسهم القيادية',symbols:Object.entries(STOCKS).map(([k,v])=>({name:'EGX:'+k,displayName:v}))}]});
-tv('screener','screener',{width:'100%',height:560,defaultColumn:'overview',defaultScreen:'most_capitalized',market:'egypt',showToolbar:true,colorTheme:theme});
-tv('tvnews','timeline',{feedMode:'symbol',symbol:'EGX:EGX30',colorTheme:theme,displayMode:'regular',width:'100%',height:560});
-drawSymbol();
+function drawChart(){
+  const d=hist[cur],mn=Math.min(...d),mx=Math.max(...d),r=(mx-mn)||1;
+  const pts=d.map((v,i)=>`${(i/(d.length-1))*600},${210-((v-mn)/r)*190}`).join(" ");
+  const up=d[d.length-1]>=ixo[cur],col=up?"var(--up)":"var(--dn)";
+  $("chart").innerHTML=`<polyline fill="none" stroke="${col}" stroke-width="2.5" points="${pts}"/><polygon fill="${col}" opacity=".12" points="0,220 ${pts} 600,220"/>`;
+  const c=(ixv[cur]/ixo[cur]-1)*100;
+  $("chTitle").innerHTML=`${cur} — <span class="${cls(c)}">${f(ixv[cur])} (${sg(c)})</span>`;
+}
+function drawLive(){
+  $("ixCards").innerHTML=Object.keys(IX).map(k=>{const c=(ixv[k]/ixo[k]-1)*100;return `<div class="card ix" onclick="cur='${k}';drawLive()" style="${k==cur?'border-color:var(--ac)':''}"><b>${k}</b><span>${f(ixv[k],0)}</span><em class="${cls(c)}" style="font-style:normal;font-size:13px">${sg(c)}</em></div>`}).join("");
+  drawChart();
+  const s=[...S].sort((a,b)=>pc(b)-pc(a));
+  $("movers").innerHTML=head+s.slice(0,4).map(rowP).join("")+s.slice(-4).map(rowP).join("");
+}
+function drawPrices(){
+  const secs=["الكل",...new Set(S.map(x=>x.sec))];
+  $("secTabs").innerHTML=secs.map(s=>`<button class="${s==secF?'on':''}" onclick="secF='${s}';drawPrices()">${s}</button>`).join("");
+  $("ptable").innerHTML=head+S.filter(x=>secF=="الكل"||x.sec==secF).map(rowP).join("");
+}
+function drawIdx(){
+  $("idxTabs").innerHTML=Object.keys(IX).map(k=>`<button class="${k==idxF?'on':''}" onclick="idxF='${k}';drawIdx()">${k}</button>`).join("");
+  const c=(ixv[idxF]/ixo[idxF]-1)*100;
+  $("idxHead").innerHTML=`${idxF}: ${f(ixv[idxF])} <span class="${cls(c)}">${sg(c)}</span> — ${IX[idxF].length} شركة`;
+  $("itable").innerHTML=head+IX[idxF].map(rowP).join("");
+}
+function tick(){
+  fetchQuotes().then(()=>{calcIdx();for(const k in IX){hist[k].push(ixv[k]);if(hist[k].length>150)hist[k].shift();}
+  $("clock").textContent=new Date().toLocaleTimeString("ar-EG",{timeZone:"Africa/Cairo"})+" (القاهرة)";
+  const t=document.querySelector("section.on").id;if(t=="live")drawLive();if(t=="prices")drawPrices();if(t=="idx")drawIdx();});
+}
 
-/* ===== حالة السوق (الأحد–الخميس 10:00–14:30 القاهرة) ===== */
-function cairo(){
-  const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Africa/Cairo',weekday:'short',hour:'numeric',minute:'numeric',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
-  return {d:p.weekday,m:(+p.hour)*60+(+p.minute),day:new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Cairo'})};
-}
-let today=cairo().day;
-function status(){
-  const c=cairo(),open=!['Fri','Sat'].includes(c.d)&&c.m>=600&&c.m<=870;
-  const b=$('status');b.textContent=open?'السوق مفتوح':'السوق مغلق';b.className='badge '+(open?'open':'closed');
-  if(c.day!==today)location.reload(); // تحديث يومي كامل عند تغير اليوم
-}
-status();setInterval(status,60000);
+/* ===== التبويبات ===== */
+$("nav").onclick=e=>{const t=e.target.dataset.t;if(!t)return;
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b==e.target));
+  document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id==t));
+  ({live:drawLive,prices:drawPrices,idx:drawIdx,fx:loadFx,eco:loadEco,news:loadNews})[t]?.();};
 
-/* ===== الأخبار بالصور (RSS عبر rss2json) ===== */
-let NEWS={market:[],eco:[]},tab='market';
-function img(it){
-  if(it.thumbnail)return it.thumbnail;
-  if(it.enclosure&&it.enclosure.link&&/image|jpg|jpeg|png|webp/i.test((it.enclosure.type||'')+it.enclosure.link))return it.enclosure.link;
-  const m=((it.content||'')+(it.description||'')).match(/<img[^>]+src=["']([^"']+)/i);return m?m[1]:'';
-}
+/* ===== الأخبار (عناوين تجريبية؛ اربطها بخادم/RSS) ===== */
+const news=[["البنك المركزي: متابعة قرارات أسعار الفائدة وتأثيرها على القطاع المصرفي","اقتصاد كلي"],["الجنيه المصري وتحركات سعر الصرف أمام الدولار","عملات"],["قناة السويس: تطورات الإيرادات وحركة الملاحة","اقتصاد"],["الطروحات الحكومية وبرنامج الخصخصة","استثمار"],["التضخم السنوي: أحدث قراءة للجهاز المركزي للتعبئة والإحصاء","أسعار"],["الاحتياطي النقدي الأجنبي وتدفقات الاستثمار","اقتصاد كلي"]];
+const demoNews=()=>$("newsBox").innerHTML=news.map(n=>`<a><b>${n[0]}</b><small>${n[1]} • نموذج – اربط بمصدر حي</small></a>`).join("");
+
+/* ===== شاشات الأخبار والعملات والاقتصاد (من الخادم) ===== */
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const noApi=id=>$(id).innerHTML='<p class="note">شغّل الخادم (npm start) وافتح الصفحة من http://localhost:3000 لعرض البيانات الحقيقية.</p>';
+const newsHTML=a=>a.map(n=>`<a href="${esc(n.link)}" target="_blank" rel="noopener"><b>${esc(n.title)}</b><small>${esc(n.source)} • ${esc(n.date)}</small></a>`).join("");
+let topic="eco";
 async function loadNews(){
-  const out={market:[],eco:[]};
-  await Promise.all(FEEDS.map(async f=>{
-    try{
-      const j=await (await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f.url))).json();
-      (j.items||[]).forEach(it=>out[f.k].push({t:it.title,l:it.link,i:img(it),d:new Date((it.pubDate||'').replace(' ','T')+'Z'),s:(j.feed&&j.feed.title)||''}));
-    }catch(e){}
-  }));
-  for(const k in out){
-    const seen=new Set();
-    out[k]=out[k].filter(x=>x.t&&!seen.has(x.t)&&seen.add(x.t)).sort((a,b)=>b.d-a.d).slice(0,30);
-  }
-  if(out.market.length||out.eco.length){NEWS=out;$('newsStamp').textContent='آخر تحديث للأخبار: '+new Date().toLocaleTimeString('ar-EG');}
-  drawNews();
+  const T=[["eco","الاقتصاد المصري"],["egx","البورصة"],["cbe","البنك المركزي"],["fx","العملات والذهب"]];
+  $("newsTabs").innerHTML=T.map(t=>`<button class="${t[0]==topic?'on':''}" onclick="topic='${t[0]}';loadNews()">${t[1]}</button>`).join("");
+  try{$("newsBox").innerHTML=newsHTML(await api("/api/news?topic="+topic))||"لا توجد أخبار"}catch(e){demoNews()}
 }
-function drawNews(){
-  const box=$('news'),tvb=$('tvnews');
-  box.hidden=tab==='tv';tvb.hidden=tab!=='tv';
-  if(tab==='tv')return;
-  const list=NEWS[tab];
-  box.innerHTML=list.length?list.map(n=>`<a class="n" href="${esc(n.l)}" target="_blank" rel="noopener">
-    ${n.i?`<img src="${esc(n.i)}" loading="lazy" alt="" onerror="this.remove()">`:''}
-    <div><b>${esc(n.t)}</b><small>${esc(n.s)} · ${isNaN(n.d)?'':n.d.toLocaleString('ar-EG')}</small></div></a>`).join(''):'لا توجد أخبار حالياً. قد يكون الحد المجاني لخدمة RSS قد استُنفد، أو أن أحد الروابط في FEEDS تغيّر.';
+async function loadFx(){
+  try{const d=await api("/api/fx"),g=d.gold;
+    $("goldCards").innerHTML=[["ذهب عيار 24 /جم",g.g24],["ذهب عيار 21 /جم",g.g21],["ذهب عيار 18 /جم",g.g18],["الجنيه الذهب (8 جم)",g.pound],["الأونصة بالدولار",g.ozUsd],["الفضة $/أونصة",g.silverUsd]].map(x=>`<div class="card ix"><b>${x[0]}</b><span>${f(x[1])}</span></div>`).join("");
+    $("fxTable").innerHTML="<tr><th>العملة</th><th>الرمز</th><th>مقابل الجنيه</th></tr>"+d.currencies.map(c=>`<tr><td>${esc(c.name)}</td><td>${c.code}</td><td class="n">${f(c.egp,3)}</td></tr>`).join("");
+    $("crossTable").innerHTML="<tr><th>الزوج</th><th>السعر</th></tr>"+d.cross.map(c=>`<tr><td>${c.pair}</td><td class="n">${f(c.rate,4)}</td></tr>`).join("");
+    $("fxNote").textContent=d.note;
+  }catch(e){noApi("goldCards")}
 }
-document.querySelector('.tabs').onclick=e=>{
-  if(!e.target.dataset.k)return;tab=e.target.dataset.k;
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b===e.target));drawNews();
-};
-loadNews();setInterval(loadNews,10*60*1000);
+async function loadEco(){
+  try{const [a,n]=await Promise.all([api("/api/economy"),api("/api/news?topic=macro")]);
+    $("ecoCards").innerHTML=a.indicators.map(i=>`<div class="card ix"><b>${esc(i.name)}</b><span>${f(i.value)}</span>${i.change==null?"":`<em class="${cls(i.change)}" style="font-style:normal;font-size:13px">${sg(i.change)}</em>`}</div>`).join("");
+    $("ecoNews").innerHTML="<b>أهم أخبار الاقتصاد</b>"+newsHTML(n);
+  }catch(e){noApi("ecoCards")}
+}
+async function ecoBrief(){
+  const o=$("ecoAI");o.style.display="block";o.textContent="…";
+  try{o.textContent=(await api("/api/brief")).text}catch(e){o.textContent="تعذر إنشاء الملخص (تأكد من ANTHROPIC_API_KEY)."}
+}
 
 /* ===== الذكاء الاصطناعي ===== */
-$('key').value=localStorage.getItem('akey')||'';
-$('saveKey').onclick=()=>{localStorage.setItem('akey',$('key').value.trim());$('out').textContent='تم حفظ المفتاح في هذا المتصفح.'};
-const SYS='أنت محلل أسواق مالية متخصص في البورصة المصرية (EGX). اكتب بالعربية، بإيجاز وبعناوين قصيرة، واعتمد على البيانات الحديثة التي تجدها عبر البحث واذكر التاريخ والمصدر عند ذكر أرقام. لا تخترع أرقاماً؛ إن لم تجد بيانات فقل ذلك. أنهِ بتنبيه أن هذا ليس نصيحة استثمارية.';
-const heads=k=>NEWS[k].slice(0,12).map(n=>'- '+n.t).join('\n');
-function prompt(t){
-  const s=sel.value,name=STOCKS[s],d=new Date().toLocaleDateString('ar-EG'),me=`سهم ${name} (EGX:${s})`;
-  return {
-    tech:`اليوم ${d}. حلل ${me} فنياً: الاتجاه العام، مستويات الدعم والمقاومة، المتوسطات المتحركة، RSI وMACD، أحجام التداول، ثم خلاصة قصيرة.`,
-    fund:`اليوم ${d}. حلل ${me} أساسياً: آخر النتائج المالية، مكرر الربحية، القيمة الدفترية، توزيعات الأرباح، الديون، وضعه في قطاعه، ونقاط القوة والضعف.`,
-    scen:`اليوم ${d}. ضع للسهم ${me} ثلاثة سيناريوهات (صاعد/محايد/هابط) بمحفزات كل سيناريو وأهم المخاطر (سعر الصرف، الفائدة، السيولة، التنظيم).`,
-    news:`اليوم ${d}. هذه عناوين أخبار البورصة المصرية:\n${heads('market')}\nحدد ما يؤثر منها على ${me} أو قطاعه، وقيّم الأثر (إيجابي/سلبي/محايد) مع السبب.`,
-    mkt:`اليوم ${d}. لخص حالة البورصة المصرية اليوم: أداء EGX30، المزاج العام، القطاعات الأبرز، السيولة. وهذه عناوين الأخبار:\n${heads('market')}`,
-    eco:`اليوم ${d}. هذه عناوين الأخبار الاقتصادية المصرية:\n${heads('eco')}\nلخص أهم ما فيها وأثره المتوقع على البورصة وسعر الصرف والقطاعات.`
-  }[t];
+const opts=S.map(x=>`<option value="${x.s}">${x.s} – ${x.n}</option>`).join("");
+$("c1").innerHTML=opts;$("c2").innerHTML=opts;$("c2").selectedIndex=1;
+const snap=()=>S.map(x=>`${x.s}|${x.n}|${x.sec}|EGX${x.ix}|${f(x.p)}|${sg(pc(x))}`).join("\n")+"\n"+Object.keys(IX).map(k=>`${k}:${f(ixv[k],0)}`).join(" ");
+const SYS="أنت محلل أسهم للبورصة المصرية. أجب بالعربية بإيجاز ووضوح بنقاط، واذكر الاتجاه المتوقع (صاعد/جانبي/هابط)، الدعم والمقاومة التقريبية، والمخاطر. لا تقدم نصيحة شراء قطعية وذكّر أن التوقعات احتمالية. اعتمد على اللقطة التالية للأسعار (بيانات تجريبية) مع معرفتك العامة بالشركات والاقتصاد المصري.\n\nلقطة الأسعار:\n";
+const hist2=[];
+function add(c,t){const d=document.createElement("div");d.className="m "+c;d.textContent=t;$("log").appendChild(d);$("log").scrollTop=1e9;return d}
+async function ask(q){
+  add("u",q);const out=add("a","…");
+    hist2.push({role:"user",content:q});
+  try{ // الخادم يستقبل {prompt} ويرد {text} (مفتاح الـ API يبقى على الخادم فقط)
+    const r=await (await fetch(API_URL+"/api/ai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:SYS+snap()+"\n\nالمحادثة:\n"+hist2.map(m=>m.content).join("\n")})})).json();
+    hist2.push({role:"assistant",content:r.text});out.textContent=r.text;
+  }catch(e){out.textContent="تعذر الاتصال بالخادم."}
 }
-async function runAI(text){
-  const key=$('key').value.trim(),o=$('out');
-  if(!PROXY_URL&&!key){o.textContent='أدخل مفتاح Anthropic API أولاً.';return}
-  o.textContent='جارٍ التحليل… (قد يستغرق دقيقة)';
-  const body={model:AI_MODEL,max_tokens:1800,system:SYS,tools:[{type:'web_search_20250305',name:'web_search',max_uses:4}],messages:[{role:'user',content:text}]};
-  try{
-    const r=await fetch(PROXY_URL||'https://api.anthropic.com/v1/messages',{method:'POST',headers:Object.assign({'content-type':'application/json'},PROXY_URL?{}:{'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}),body:JSON.stringify(body)});
-    const j=await r.json();
-    if(!r.ok)throw new Error((j.error&&j.error.message)||r.status);
-    o.innerHTML=esc(j.content.filter(b=>b.type==='text').map(b=>b.text).join('')).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^#+\s*(.+)$/gm,'<b>$1</b>');
-  }catch(e){o.textContent='تعذر التحليل: '+e.message}
-}
-$('tools').onclick=e=>{if(e.target.dataset.t)runAI(prompt(e.target.dataset.t))};
-$('askBtn').onclick=()=>{const q=$('ask').value.trim();if(q)runAI(`سؤال عن سهم ${STOCKS[sel.value]} (EGX:${sel.value}) بتاريخ ${new Date().toLocaleDateString('ar-EG')}: ${q}`)};
+function send(){const v=$("q").value.trim();if(v){$("q").value="";ask(v)}}
+$("q").addEventListener("keydown",e=>{if(e.key=="Enter")send()});
+const askAll=()=>ask("أعطني توقعاً مختصراً لكل الأسهم في القائمة مرتبة حسب القطاع، مع الاتجاه المتوقع لكل سهم في سطر واحد.");
+const askIdx=()=>ask("توقع اتجاه مؤشرات EGX30 وEGX70 وEGX100 خلال الأسبوع القادم مع أهم العوامل.");
+const cmp=()=>ask(`قارن بين السهمين ${$("c1").value} و${$("c2").value} من حيث الأداء الحالي والقطاع والمخاطر والتوقع، وانتهِ بخلاصة.`);
+
+drawLive();tick();setInterval(tick,2500);
 </script>
 </body>
-  </html>
+</html
