@@ -1,0 +1,164 @@
+
+    scen: `اليوم ${date}. قدم ثلاثة سيناريوهات لسهم ${stock}: صاعد ومحايد وهابط. اشرح محفزات كل سيناريو وشروط تحققه والمخاطر. لا تضع أهدافًا سعرية دون بيانات موثقة. هذا تحليل تعليمي وليس توصية.`,
+    news: `اليوم ${date}. ابحث عن أحدث أخبار البورصة المصرية المتعلقة بـ ${stock} وقطاعه. صنف الأثر المحتمل إلى إيجابي أو سلبي أو محايد، واشرح السبب مع ذكر المصادر والتواريخ.`,
+    market: `اليوم ${date}. لخص حالة البورصة المصرية اعتمادًا على أحدث البيانات المتاحة، بما فيها EGX30 وEGX70 والسيولة والقطاعات الأبرز. اذكر تاريخ البيانات ولا تخترع أرقامًا.`,
+    eco: `اليوم ${date}. لخص أحدث الأخبار الاقتصادية المصرية وأثرها المحتمل على البورصة وسعر الصرف والفائدة والقطاعات المختلفة. ميّز بين الحقائق والتوقعات واذكر المصادر.`
+  };
+
+  if (!Object.prototype.hasOwnProperty.call(prompts, type)) {
+    throw new Error('نوع التحليل غير معروف.');
+  }
+
+  return prompts[type];
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[ch]));
+}
+
+function renderText(text) {
+  $('result').innerHTML = escapeHTML(text)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^#{1,3}\s+(.+)$/gm, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+$('saveProxy').addEventListener('click', () => {
+  const value = $('proxy').value.trim();
+
+  if (!value) {
+    PROXY_URL = '';
+    $('status').textContent = 'غير متصل';
+    $('result').textContent = 'أدخل عنوان الخادم الوسيط أولًا.';
+    return;
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (!['https:', 'http:'].includes(url.protocol)) {
+      throw new Error('عنوان الخادم غير صالح.');
+    }
+
+    if (location.protocol === 'https:' && url.protocol !== 'https:') {
+      throw new Error('يجب استخدام عنوان HTTPS.');
+    }
+
+    PROXY_URL = url.href;
+    $('status').textContent = 'تم ضبط العنوان';
+    $('result').textContent =
+      'تم ضبط عنوان الخادم. اختبر الاتصال باستخدام أحد أزرار التحليل.';
+  } catch (error) {
+    $('result').textContent = error.message || 'عنوان URL غير صالح.';
+  }
+});
+
+async function runAI(userPrompt) {
+  if (!PROXY_URL) {
+    $('result').textContent =
+      'التحليل غير مفعّل. اضبط عنوان خادم وسيط آمن أولًا. لا تضع مفتاح API في ملف HTML.';
+    return;
+  }
+
+  $('result').textContent = 'جارٍ الاتصال بالخادم وتحضير التحليل…';
+
+  const buttons = [
+    ...document.querySelectorAll('#tools button'),
+    $('askBtn')
+  ];
+
+  buttons.forEach(button => button.disabled = true);
+
+  try {
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt: userPrompt
+      }),
+      cache: 'no-store'
+    });
+
+    let data;
+
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error('الخادم لم يُرجع استجابة JSON صالحة.');
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error || `خطأ في الخادم: ${response.status}`
+      );
+    }
+
+    const answer =
+      typeof data?.text === 'string' ? data.text :
+      typeof data?.answer === 'string' ? data.answer : '';
+
+    if (!answer.trim()) {
+      throw new Error('لم يُرجع الخادم نص التحليل.');
+    }
+
+    renderText(answer);
+
+  } catch (error) {
+    $('result').textContent =
+      'تعذر التحليل: ' +
+      (error.message || 'خطأ اتصال') +
+      '. تحقق من عنوان الخادم وإعدادات CORS.';
+  } finally {
+    buttons.forEach(button => button.disabled = false);
+  }
+}
+
+$('tools').addEventListener('click', async event => {
+  const button = event.target.closest('button[data-type]');
+
+  if (!button) return;
+
+  try {
+    await runAI(makePrompt(button.dataset.type));
+  } catch (error) {
+    $('result').textContent = error.message;
+  }
+});
+
+$('askBtn').addEventListener('click', async () => {
+  const question = $('question').value.trim();
+
+  if (!question) {
+    $('result').textContent = 'اكتب سؤالك أولًا.';
+    return;
+  }
+
+  try {
+    const {symbol, name} = getStock();
+
+    await runAI(
+      `سؤال عن سهم ${name} (EGX:${symbol}) بتاريخ ${
+        new Date().toLocaleDateString('ar-EG')
+      }:\n${question}`
+    );
+  } catch (error) {
+    $('result').textContent = error.message;
+  }
+});
+
+$('clearBtn').addEventListener('click', () => {
+  $('result').textContent = '';
+  $('question').value = '';
+});
+</script>
+
+</body>
+</html>
